@@ -1,0 +1,236 @@
+﻿
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Categorias</h2>
+
+@using (Html.BeginForm())
+{
+    <button id="btnGetCategories">Obtener Categorias</button>
+    <button id="btnGetCategory">Obtener Categoria</button>
+    <button id="btnAddCategory">Agregar Categoria</button>
+    <button id="btnUpDateCategory">Modificar Categoria</button>
+    <button id="btnDeleteCategory">Eliminar Categoria</button>
+    <br /><br />
+    <input id="txtCategoryID" type="text" placeholder="Category ID"/>
+    <input id="txtDescription" type="text" placeholder="Category Description" />
+    <br /><br />
+
+    <div id="lblMessage"></div>
+}
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            $('#btnGetCategories').on('click', function () {
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/CategoriesAPI',
+                    datatype: 'json',
+                    cache:false
+                })
+                .success(function (data) {
+                    var outPut = '';
+
+                    for(var i=0; i<data.length; i++){
+                        outPut += '<hr/><br/>'
+                        outPut += '<b> Categoria ID: <b/>' + data[i].CategoryID + '<br/>'
+                        outPut += '<b> Descripción: <b/>' + data[i].Description + '<br/>'
+                    }
+
+                    $('#lblMessage').html(outPut)
+                })
+
+                .error(function (hxr, ajaxOptions, throwError) {
+                    $('#lblMessage').html('Error')
+                });               
+
+                return false;
+            });
+
+            $('#btnGetCategory').on('click', function () {
+
+                var categoryID = $('#txtCategoryID').val();
+
+                if (categoryID == "") {
+                    $('#lblMessage').html('Debe ingresar el ID')
+                    return false;
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/CategoriesAPI/' + categoryID,
+                    datatype: 'json',
+                    cache: false
+                })
+                .success(function (data) {
+                    if (data != null) {
+                        var outPut = '';
+
+                        outPut += '<hr/><br/>'
+                        outPut += '<b> Categoria ID: <b/>' + data.CategoryID + '<br/>'
+                        outPut += '<b> Descripción: <b/>' + data.Description + '<br/>'
+
+                        $('#lblMessage').html(outPut)
+                    }
+                    else {
+                        $('#lblMessage').html('No se encontraron registros')
+                    }
+                })
+
+                .error(function (hxr, ajaxOptions, throwError) {
+                    $('#lblMessage').html('Error')
+                });
+
+                return false;
+            });
+
+            $('#btnAddCategory').on('click', function () {
+
+                var description = $('#txtDescription').val();
+
+                if (description == "") {
+                    $('#lblMessage').html('Debe ingresar el Descripción')
+                    return false;
+                }
+
+                var category = { Description: description }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/CategoriesAPI',
+                    data: category,
+                    datatype: 'json',
+                    cache: false
+                })
+                .success(function (data) {
+                    var outPut = '';
+
+                    outPut += '<hr/>Categoria Agregada<br/>'
+                    outPut += '<b> Categoria ID: <b/>' + data.CategoryID + '<br/>'
+                    outPut += '<b> Descripción: <b/>' + data.Description + '<br/>'
+
+                    $('#lblMessage').html(outPut)
+                   
+                })
+
+                .error(function (hxr, ajaxOptions, throwError) {
+                    $('#lblMessage').html('Error')
+                });
+
+                return false;
+            });
+
+            $('#btnUpDateCategory').on('click', function () {
+                var categoryID = $('#txtCategoryID').val();
+
+                if (categoryID == "") {
+                    $('#lblMessage').html('Debe ingresar el ID')
+                    return false;
+                }
+
+                var description = $('#txtDescription').val();
+
+                if (description == "") {
+                    $('#lblMessage').html('Debe ingresar el Descripción')
+                    return false;
+                }
+
+                var category = {
+                    CategoryID: categoryID,
+                    Description: description
+                }
+
+                $.ajax({
+                    type: 'PUT',
+                    url: '/api/CategoriesAPI/' + categoryID,
+                    data: category,
+                    datatype: 'json',
+                    cache: false
+                })
+                .success(function (data) {
+                    var outPut = '';
+
+                    outPut += '<hr/>Categoria Modificada<br/>'
+                   $('#lblMessage').html(outPut)
+
+                })
+
+                .error(function (hxr, ajaxOptions, throwError) {
+                    $('#lblMessage').html('Error')
+                });
+
+                return false;
+            });
+
+            $('#btnDeleteCategory').on('click', function () {
+
+                var categoryID = $('#txtCategoryID').val();
+
+                if (categoryID == "") {
+                    $('#lblMessage').html('Debe ingresar el ID')
+                    return false;
+                }
+
+                $.ajax({
+                    type: 'DELETE',
+                    url: '/api/CategoriesAPI/' + categoryID,
+                    datatype: 'json',
+                    cache: false
+                })
+                .success(function (data) {
+                    if (data != null && data != '') {
+                        var outPut = '';
+
+                        outPut += '<hr/>Registro Eliminado<br/>'
+                        outPut += '<b> Categoria ID: <b/>' + data.CategoryID + '<br/>'
+                        outPut += '<b> Descripción: <b/>' + data.Description + '<br/>'
+
+                        $('#lblMessage').html(outPut)
+                    }
+                    else {
+                        $('#lblMessage').html('No se encontraron registros')
+                    }
+                })
+
+                .error(function (hxr, ajaxOptions, throwError) {
+                    $('#lblMessage').html('Error')
+                });
+
+                return false;
+            });
+
+            $(document).ajaxStart(function () {
+                $("#loading").show();
+            });
+
+            $(document).ajaxStop(function () {
+                $("#loading").hide();
+            });
+
+        });
+    </script>
+}
+
+<style type="text/css">
+    #loading {
+        display: none;
+        background-color: gray;
+        z-index: 999999;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        padding-top: 300px;
+        filter: alpha(opacity=75);
+        -khtml-opacity: 0.75;
+        -moz-opacity: 0.75;
+        opacity: 0.75;
+    }
+</style>
+<div id="loading"><img src="~/Images/Load.gif" /></div>

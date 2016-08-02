@@ -1,0 +1,49 @@
+﻿@model WMarket.ViewModels.OrderView 
+@{
+    ViewBag.Title = "Nuevo Inventario";
+}
+
+<h2>Nuevo Inventario</h2>
+<h3>@ViewBag.Error</h3>
+<h3>@ViewBag.Message</h3>
+
+@using (Html.BeginForm("NewInventory", "Inventories", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+
+        @Html.ActionLink("Agregar Producto", "AddInventory", new { }, new { @class = "btn btn-primary" }) |
+        <input type="submit" value="Guardar Inventario" id="NewOrder" class="btn btn-default" />
+
+    </div>
+      <h2>Detalle Inventarios</h2>
+    <table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ProductOrder.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ProductOrder.Quantity)
+        </th>   
+        <th></th>
+    </tr>
+
+@for(int i = 0; i < Model.Products.Count; i++) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => Model.Products[i].Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => Model.Products[i].Quantity)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new {id = Model.Products[i].ProductID }) |
+            @Html.ActionLink("Delete", "Delete", new { id = Model.Products[i].ProductID }) |
+        </td>
+    </tr>
+}
+
+</table>
+
+}

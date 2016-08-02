@@ -1,0 +1,38 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.TextBox("txtN", 0)
+    <button id="btnCalculate">Calcular</button>
+    <div id="lblMessage">
+
+    </div>
+}
+
+@section Scripts{
+    <script type="text/javascript">
+        $(function () {
+            $("#btnCalculate").on("click", function () {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("JsonFactorial")',
+                    data: { n: $('#txtN').val() },
+                    datatype: 'json',
+                    cache: false
+                })
+                .success(function (data) {
+                    $("#lblMessage").html(data.Factorial);
+                })
+                .error(function (xhr, ajaxOptions, thrownError) {
+                    $("#lblMessage").html("An Error");
+                });
+                return false;
+            })
+        })
+    </script>
+    }

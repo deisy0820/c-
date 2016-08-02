@@ -1,0 +1,72 @@
+﻿@model WMarket.ViewModels.OrderView 
+
+@{
+    ViewBag.Title = "Nueva Orden";
+}
+
+<h2>Nueva Orden</h2>
+<h3>@ViewBag.Error</h3>
+<h3>@ViewBag.Message</h3>
+
+@using (Html.BeginForm("NewOrder", "Orders", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+      
+        <div class="form-group">
+            @Html.LabelFor(model => model.Customer.CustomerID, "Cliente", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("CustomerID", null, htmlAttributes: new { @class = "form-contro" })
+                @Html.ValidationMessageFor(model => model.Customer.CustomerID)
+            </div>
+        </div>
+
+        
+        @Html.ActionLink("Agregar Producto", "AddProduct", new {}, new { @class="btn btn-primary" }) |
+        <input type="submit" value="Guardar Orden" id="NewOrder" class="btn btn-default" />
+         
+    </div>
+    
+    <h2>Detalles Orden</h2>
+    <table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ProductOrder.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ProductOrder.Price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ProductOrder.Quantity)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ProductOrder.Value)
+        </th>       
+        <th></th>
+    </tr>
+
+@for(int i = 0; i < Model.Products.Count; i++) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => Model.Products[i].Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => Model.Products[i].Price)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => Model.Products[i].Quantity)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => Model.Products[i].Value)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new {id = Model.Products[i].ProductID }) |
+            @Html.ActionLink("Delete", "Delete", new { id = Model.Products[i].ProductID }) |
+        </td>
+    </tr>
+}
+
+</table>
+}
+

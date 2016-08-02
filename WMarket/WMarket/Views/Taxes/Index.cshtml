@@ -1,0 +1,240 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Impuestos</h2>
+
+@using (Html.BeginForm())
+{
+    <button id="btnGetTaxes">Obtener Impuestos</button>
+    <button id="btnGetTax">Obtener Impuesto</button>
+    <button id="btnAddTax">Agregar Impuesto</button>
+    <button id="btnUpDateTax">Modificar Impuesto</button>
+    <button id="btnDeleteTax">Eliminar Impuesto</button>
+    <br /><br />
+    <input id="txtTaxID" type="text" placeholder="Category ID" />
+    <input id="txtDescription" type="text" placeholder="Category Description" />
+    <br /><br />
+
+    <div id="lblMessage"></div>
+}
+
+@section Scripts
+{
+<script type="text/javascript">
+    $(function () {
+        $('#btnGetTaxes').on('click', function () {
+            $.ajax({
+                type: 'GET',
+                url: '/api/TaxesAPI',
+                datatype: 'json',
+                cache: false
+            })
+            .success(function (data) {
+                if (data != null && data != '') {
+                    var outPut = '';
+
+                    for (var i = 0; i < data.length; i++) {
+                        outPut += '<hr/><br/>'
+                        outPut += '<b> Impuesto ID: <b/>' + data[i].TaxID + '<br/>'
+                        outPut += '<b> Descripción: <b/>' + data[i].Description + '<br/>'
+                    }
+
+                    $('#lblMessage').html(outPut)
+                }
+                else {
+                    $('#lblMessage').html('No se encontraron registros')
+                }
+            })
+
+            .error(function (hxr, ajaxOptions, throwError) {
+                $('#lblMessage').html('Error')
+            });
+
+            return false;
+        });
+
+        $('#btnGetTax').on('click', function () {
+
+            var taxID = $('#txtTaxID').val();
+
+            if (taxID == "") {
+                $('#lblMessage').html('Debe ingresar el ID')
+                return false;
+            }
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/TaxesAPI/' + taxID,
+                datatype: 'json',
+                cache: false
+            })
+            .success(function (data) {
+                if (data != null && data != '') {
+                    var outPut = '';
+
+                    outPut += '<hr/><br/>'
+                    outPut += '<b> Categoria ID: <b/>' + data.TaxID + '<br/>'
+                    outPut += '<b> Descripción: <b/>' + data.Description + '<br/>'
+
+                    $('#lblMessage').html(outPut)
+                }
+                else {
+                    $('#lblMessage').html('No se encontraron registros')
+                }
+            })
+
+            .error(function (hxr, ajaxOptions, throwError) {
+                $('#lblMessage').html('Error')
+            });
+
+            return false;
+        });
+
+        $('#btnAddTax').on('click', function () {
+
+            var description = $('#txtDescription').val();
+
+            if (description == "") {
+                $('#lblMessage').html('Debe ingresar la Descripción')
+                return false;
+            }
+
+            var tax = { Description: description }
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/TaxesAPI',
+                data: tax,
+                datatype: 'json',
+                cache: false
+            })
+            .success(function (data) {
+                var outPut = '';
+
+                outPut += '<hr/>Categoria Agregada<br/>'
+                outPut += '<b> Categoria ID: <b/>' + data.TaxID + '<br/>'
+                outPut += '<b> Descripción: <b/>' + data.Description + '<br/>'
+
+                $('#lblMessage').html(outPut)
+
+            })
+
+            .error(function (hxr, ajaxOptions, throwError) {
+                $('#lblMessage').html('Error')
+            });
+
+            return false;
+        });
+
+        $('#btnUpDateTax').on('click', function () {
+            var taxID = $('#txtTaxID').val();
+
+            if (taxID == "") {
+                $('#lblMessage').html('Debe ingresar el ID')
+                return false;
+            }
+
+            var description = $('#txtDescription').val();
+
+            if (description == "") {
+                $('#lblMessage').html('Debe ingresar la Descripción')
+                return false;
+            }
+
+            var tax = {
+                TaxID: taxID,
+                Description: description
+            }
+
+            $.ajax({
+                type: 'PUT',
+                url: '/api/TaxesAPI/' + taxID,
+                data: tax,
+                datatype: 'json',
+                cache: false
+            })
+            .success(function (data) {
+                var outPut = '';
+
+                outPut += '<hr/>Impuesto Modificado<br/>'
+                $('#lblMessage').html(outPut)
+
+            })
+
+            .error(function (hxr, ajaxOptions, throwError) {
+                $('#lblMessage').html('Error')
+            });
+
+            return false;
+        });
+
+        $('#btnDeleteTax').on('click', function () {
+
+            var taxID = $('#txtTaxID').val();
+
+            if (taxID == "") {
+                $('#lblMessage').html('Debe ingresar el ID')
+                return false;
+            }
+
+            $.ajax({
+                type: 'DELETE',
+                url: '/api/TaxesAPI/' + taxID,
+                datatype: 'json',
+                cache: false
+            })
+            .success(function (data) {
+                if (data != null) {
+                    var outPut = '';
+
+                    outPut += '<hr/>Registro Eliminado<br/>'
+                    outPut += '<b> Impuesto ID: <b/>' + data.TaxID + '<br/>'
+                    outPut += '<b> Descripción: <b/>' + data.Description + '<br/>'
+
+                    $('#lblMessage').html(outPut)
+                }
+                else {
+                    $('#lblMessage').html('No se encontraron registros')
+                }
+            })
+
+            .error(function (hxr, ajaxOptions, throwError) {
+                $('#lblMessage').html('Error')
+            });
+
+            return false;
+        });
+
+        $(document).ajaxStart(function () {
+            $("#loading").show();
+        });
+
+        $(document).ajaxStop(function () {
+            $("#loading").hide();
+        });
+
+    });
+</script>
+
+}
+
+<style type="text/css">
+    #loading {
+        display: none;
+        background-color: gray;
+        z-index: 999999;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        padding-top: 300px;
+        filter: alpha(opacity=75);
+        -khtml-opacity: 0.75;
+        -moz-opacity: 0.75;
+        opacity: 0.75;
+    }
+</style>
+<div id="loading"><img src="~/Images/Load.gif" /></div>
